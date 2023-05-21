@@ -20,6 +20,9 @@ export default class Transaction{
 	 * @param {boolean} increment 
 	 */
 	store(name, key, increment = false){
+		if(this.type === 'success')
+			throw new Error('Transaction type allow onupgradeneeded')
+		
 		const { db : { result, transaction } } = this.db
 
 		const store = result.objectStoreNames.contains(name) ? 
@@ -34,6 +37,8 @@ export default class Transaction{
 	 * @param {'readonly'|'readwrite'} mode 
 	 */
 	request(store, mode = 'readonly'){
+		if(this.type === 'upgradeneeded')
+			throw new Error('Transaction type allow onsuccess')
 		const { result } = this.db,
 		[name, index] = store.split('.', 2),
 		_ = result.transaction(name, mode).objectStore(name)
